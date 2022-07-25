@@ -16,7 +16,7 @@
 - [x] Dropout
 - [ ] Convolutional Neural Networks
 - [x] PyTorch on CIFAR-10
-- [ ] Higher Level Representations: Image Features
+- [x] Network Visualization: Saliency Maps, Class Visualization, and Fooling Images
 
 
 ### Assignment 3

@@ -34,13 +34,19 @@ def compute_saliency_maps(X, y, model):
     ##############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
-
+    scores = model(X) # forward pass
+    correct_class_scores = scores.gather(1, y.view(-1,1)).squeeze()
+    correct_class_scores.backward(torch.ones(y.shape[0])) # need to input vector of ones becuase scores is not a scalar
+    saliency = X.grad
+    saliency = torch.absolute(saliency)
+    saliency,_ = torch.max(saliency, axis=1)
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ##############################################################################
     #                             END OF YOUR CODE                               #
     ##############################################################################
     return saliency
+
+
 
 def make_fooling_image(X, target_y, model):
     """
@@ -61,6 +67,7 @@ def make_fooling_image(X, target_y, model):
     X_fooling = X_fooling.requires_grad_()
 
     learning_rate = 1
+    
     ##############################################################################
     # TODO: Generate a fooling image X_fooling that the model will classify as   #
     # the class target_y. You should perform gradient ascent on the score of the #
@@ -75,8 +82,20 @@ def make_fooling_image(X, target_y, model):
     # You can print your progress over iterations to check your algorithm.       #
     ##############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
-    pass
+    for i in range(1000):
+      scores = model(X_fooling) # forward pass
+      if(torch.argmax(scores)==target_y):
+        print(f"Finished generating image on iteration {i}")
+        break
+      else:
+        if i%5==0:
+          print(f"Iteration {i}: target_y score = {scores[:,target_y]}")
+      correct_class_score = scores[:, target_y]  # get the current outputted class score
+      correct_class_score.backward()
+      dX = X_fooling.grad
+      
+      with torch.no_grad(): # don't compute gradients on this step
+        X_fooling += learning_rate * dX/(torch.norm(X))  # not sure if this is the normalization they meant???
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ##############################################################################
@@ -93,8 +112,18 @@ def class_visualization_update_step(img, model, target_y, l2_reg, learning_rate)
     # Be very careful about the signs of elements in your code.            #
     ########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+    img.requires_grad_()
+    scores = model(img)
+    loss = scores[:,target_y] - torch.norm(img)*l2_reg
+    loss.backward()
+    dX = img.grad
+    
+    with torch.no_grad(): # don't compute gradients on this step
+        img += learning_rate * dX/torch.norm(dX)  # update image
+        img.grad = torch.zeros(img.grad.shape)
 
-    pass
+
+    return img
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ########################################################################
