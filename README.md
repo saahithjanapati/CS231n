@@ -22,6 +22,6 @@
 ### Assignment 3
 - [ ] Image Captioning with Vanilla RNNs
 - [ ] Image Captioning with Transformers
-- [ ] Generative Adversarial Networks
+- [x] Generative Adversarial Networks
 - [ ] Self-Supervised Learning for Image Classification
 - [ ] Extra Credit: Image Captioning with LSTMs
