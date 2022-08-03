@@ -23,5 +23,5 @@
 - [ ] Image Captioning with Vanilla RNNs
 - [ ] Image Captioning with Transformers
 - [x] Generative Adversarial Networks
-- [ ] Self-Supervised Learning for Image Classification
+- [x] Self-Supervised Learning for Image Classification
 - [ ] Extra Credit: Image Captioning with LSTMs
